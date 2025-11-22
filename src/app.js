@@ -12,6 +12,12 @@ import usersRoutes from '#routes/users.routes.js';
 
 const app = express();
 
+// Trust proxy - important for getting real client IP in production
+// When behind Docker, load balancer, or reverse proxy
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet());
 
 // CORS configuration for frontend (NextAuth/Clerk)

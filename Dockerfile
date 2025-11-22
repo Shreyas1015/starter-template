@@ -31,7 +31,7 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 8080) + '/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => { process.exit(1) })"
+  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 8080) + '/health', { headers: { 'User-Agent': 'Docker-HealthCheck/1.0' } }, (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => { process.exit(1) })"
 
 # Development stage
 FROM base AS development

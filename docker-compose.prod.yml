@@ -25,7 +25,7 @@ services:
           memory: 512M
           cpus: '0.5'
     healthcheck:
-      test: [ 'CMD', 'node', '-e', "require('http').get('http://localhost:' + (process.env.PORT || 8080) + '/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => { process.exit(1) })" ]
+      test: [ 'CMD', 'node', '-e', "require('http').get('http://localhost:' + (process.env.PORT || 8080) + '/health', { headers: { 'User-Agent': 'Docker-HealthCheck/1.0' } }, (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => { process.exit(1) })" ]
       interval: 30s
       timeout: 10s
       retries: 3
