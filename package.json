@@ -24,8 +24,10 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "dev:docker": "sh ./scripts/dev.sh",
-    "prod:docker": "sh ./scripts/prod.sh",
+    "dev:docker": "docker-compose -f docker-compose.dev.yml up --build",
+    "dev:docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "prod:docker": "docker-compose -f docker-compose.prod.yml up --build -d",
+    "prod:docker:down": "docker-compose -f docker-compose.prod.yml down",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "repository": {

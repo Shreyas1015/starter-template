@@ -35,14 +35,7 @@ app.use(
   })
 );
 
-app.use(securityMiddleware);
-
-app.get('/', (req, res) => {
-  logger.info('Hello from Acquisitions!');
-
-  res.status(200).send('Hello from Acquisitions!');
-});
-
+// Health check endpoint - no security middleware (called by monitoring systems)
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
@@ -51,8 +44,17 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Apply security middleware to all other routes
+app.use(securityMiddleware);
+
+app.get('/', (req, res) => {
+  logger.info('Hello from Starter Template!');
+
+  res.status(200).send('Hello from Starter Template!');
+});
+
 app.get('/api', (req, res) => {
-  res.status(200).json({ message: 'Acquisitions API is running!' });
+  res.status(200).json({ message: 'Starter Template API is running!' });
 });
 
 app.use('/api/auth', authRoutes);

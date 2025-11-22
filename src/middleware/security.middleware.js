@@ -1,6 +1,7 @@
 import aj from '#config/arcjet.js';
 import logger from '#config/logger.js';
 import { slidingWindow } from '@arcjet/node';
+import { isMissingUserAgent } from '@arcjet/inspect';
 
 const securityMiddleware = async (req, res, next) => {
   try {
@@ -30,6 +31,33 @@ const securityMiddleware = async (req, res, next) => {
     );
 
     const decision = await client.protect(req);
+
+    // Check for error results and log them (fail open per Arcjet best practices)
+    for (const result of decision.results) {
+      if (result.reason.isError()) {
+        logger.warn('Arcjet error during rule evaluation', {
+          ip: req.ip,
+          userAgent: req.get('User-Agent'),
+          path: req.path,
+          error: result.reason.message,
+        });
+      }
+    }
+
+    // Check for missing User-Agent header (requests without it cannot be properly identified)
+    // Per Arcjet best practices, we should block these requests
+    if (decision.results.some(isMissingUserAgent)) {
+      logger.warn('Request missing User-Agent header', {
+        ip: req.ip,
+        path: req.path,
+        method: req.method,
+      });
+
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: 'User-Agent header is required',
+      });
+    }
 
     if (decision.isDenied() && decision.reason.isBot()) {
       logger.warn('Bot request blocked', {
